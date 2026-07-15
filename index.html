@@ -31,6 +31,46 @@ var po=parseInt(localStorage.getItem("task-pet-opacity"),10);if(po>=15&&po<=100)
 <p>Fill in the blanks — the <code>schtasks /create</code> command assembles live below.
 The form adapts to the schedule type you pick.</p>
 
+<div class="tool-examples" id="st-examples" role="group" aria-label="Example tasks">
+  <span class="manifest-label tool-examples-label">examples</span>
+  <button type="button" data-ex="0">daily 2am</button>
+  <button type="button" data-ex="1">every 4 hours</button>
+  <button type="button" data-ex="2">at logon (SYSTEM)</button>
+  <button type="button" data-ex="3">at startup, highest</button>
+  <button type="button" data-ex="4">once</button>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var form = document.querySelector(".st-form"), box = document.getElementById("st-examples");
+  if (!form || !box) return;
+  var P = [
+    { "st-name": "Nightly Backup", "st-prog": "C:\\Scripts\\backup.cmd", "st-sc": "DAILY", "st-st": "02:00" },
+    { "st-name": "Health Check", "st-prog": "C:\\Scripts\\healthcheck.exe", "st-sc": "HOURLY", "st-mo": "4", "st-st": "00:00" },
+    { "st-name": "Startup Tasks", "st-prog": "C:\\Scripts\\startup.cmd", "st-sc": "ONLOGON", "st-ru": "SYSTEM" },
+    { "st-name": "Boot Service", "st-prog": "C:\\Program Files\\App\\svc.exe", "st-sc": "ONSTART", "st-ru": "SYSTEM", "st-rl": "HIGHEST" },
+    { "st-name": "One Time Migration", "st-prog": "C:\\Scripts\\migrate.cmd", "st-sc": "ONCE", "st-sd": "2027-01-01", "st-st": "23:00" }
+  ];
+  function apply(p) {
+    Array.prototype.forEach.call(form.querySelectorAll("input,textarea"), function (e) {
+      if (e.type === "checkbox" || e.type === "radio") e.checked = e.defaultChecked; else e.value = e.defaultValue;
+    });
+    Array.prototype.forEach.call(form.querySelectorAll("select"), function (s) {
+      var d = s.querySelector("option[selected]"); if (d) s.value = d.value; else s.selectedIndex = 0;
+    });
+    Object.keys(p).forEach(function (id) {
+      var e = document.getElementById(id); if (!e) return;
+      if (e.type === "checkbox") e.checked = !!p[id]; else e.value = p[id];
+    });
+    var f = form.querySelector("input,select,textarea");
+    f.dispatchEvent(new Event("change", { bubbles: true }));
+    f.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+  box.addEventListener("click", function (ev) {
+    var b = ev.target.closest("button[data-ex]"); if (b) apply(P[+b.getAttribute("data-ex")]);
+  });
+});
+</script>
+
 <div class="st-form">
   <div class="st-row">
     <label class="manifest-label" for="st-name">task name</label>
