@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" role="img" aria-label="WINDOWS TASK BUILDER — Terminal Workbench">
+  <rect width="1200" height="300" rx="12" fill="#090c0d"/>
+  <rect x="0.5" y="0.5" width="1199" height="299" rx="12" fill="none" stroke="#2a363d"/>
+  <g stroke="#2a363d" stroke-width="0.6" opacity="0.35"><line x1="150" y1="0" x2="150" y2="300"/><line x1="300" y1="0" x2="300" y2="300"/><line x1="450" y1="0" x2="450" y2="300"/><line x1="600" y1="0" x2="600" y2="300"/><line x1="750" y1="0" x2="750" y2="300"/><line x1="900" y1="0" x2="900" y2="300"/><line x1="1050" y1="0" x2="1050" y2="300"/><line x1="0" y1="75" x2="1200" y2="75"/><line x1="0" y1="150" x2="1200" y2="150"/><line x1="0" y1="225" x2="1200" y2="225"/></g>
+  <g transform="translate(1040,58) scale(7)">
+    <path d="M2 16 V7 Q2 1 8 1 Q14 1 14 7 V16 L12 14.4 L10 16 L8 14.4 L6 16 L4 14.4 Z" fill="#63f2ab"/>
+    <rect x="5" y="6" width="2" height="3" fill="#090c0d"/><rect x="9" y="6" width="2" height="3" fill="#090c0d"/>
+  </g>
+  <text x="84" y="120" font-family="'Cascadia Code','JetBrains Mono',Consolas,monospace" font-size="44" font-weight="700" letter-spacing="6" fill="#63f2ab">WINDOWS TASK BUILDER</text>
+  <text x="88" y="160" font-family="'Cascadia Code','JetBrains Mono',Consolas,monospace" font-size="15" letter-spacing="2.5" fill="#879994">BUILD A WINDOWS SCHTASKS /CREATE COMMAND</text>
+  <rect x="86" y="202" width="900" height="54" rx="6" fill="#0e1214" stroke="#2a363d"/>
+  <text x="108" y="235" font-family="'Cascadia Code','JetBrains Mono',Consolas,monospace" font-size="17" fill="#63f2ab">$</text>
+  <text x="130" y="235" font-family="'Cascadia Code','JetBrains Mono',Consolas,monospace" font-size="15" fill="#b4c3bd">schtasks /create /tn Backup /sc daily /st 02:00 /ru SYSTEM</text>
+</svg>

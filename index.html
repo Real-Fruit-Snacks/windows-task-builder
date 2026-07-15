@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Windows Task Builder</title>
+<meta name="description" content="Fill in the blanks and get a complete schtasks /create command — schedule dropdowns, correct quoting, and a copy button. Plus a searchable Last Run Result code reference for tasks that fail.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%2016'%3E%3Crect%20width='16'%20height='16'%20rx='3'%20fill='%23090c0d'/%3E%3Cpath%20d='M3.5%205L6.5%208L3.5%2011'%20fill='none'%20stroke='%2363f2ab'%20stroke-width='1.4'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3Crect%20x='8'%20y='9.6'%20width='5'%20height='1.5'%20rx='0.5'%20fill='%2363f2ab'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#0e1214">
+<script>(function(){try{
+var t=localStorage.getItem("task-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);
+var a=localStorage.getItem("task-accent");if(a&&"12345".indexOf(a)>-1)document.documentElement.setAttribute("data-accent",a);
+var pm=localStorage.getItem("task-pet");document.documentElement.setAttribute("data-pet",pm==="off"?"off":(pm==="cursor"?"cursor":"float"));
+var ps=parseInt(localStorage.getItem("task-pet-size"),10);if(ps>=16&&ps<=64)document.documentElement.style.setProperty("--pet-size",ps+"px");
+var po=parseInt(localStorage.getItem("task-pet-opacity"),10);if(po>=15&&po<=100)document.documentElement.style.setProperty("--pet-base-opacity",(po/100).toFixed(3));
+}catch(e){}})();</script>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+<header class="topbar">
+  <span class="manifest-label site-title">WINDOWS TASK BUILDER</span>
+  <span class="topbar-actions">
+    <button id="btn-settings" class="icon-btn" title="Settings (s)" aria-label="Settings"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><circle cx="8" cy="8" r="2.2" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M12.6 3.4l-1.4 1.4M4.8 11.2l-1.4 1.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+    <button id="btn-theme" class="icon-btn" title="Toggle theme (t)" aria-label="Toggle theme"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M13 9.5A5.5 5.5 0 1 1 6.5 3 4.5 4.5 0 0 0 13 9.5Z" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linejoin="round"/></svg></button>
+  </span>
+</header>
+<main>
+  <article class="note note-wide">
+    <header class="note-header"><h1>Windows Task Builder</h1><p class="tool-desc">Fill in the blanks and get a complete schtasks /create command — schedule dropdowns, correct quoting, and a copy button. Plus a searchable Last Run Result code reference for tasks that fail.</p></header>
+<p>Fill in the blanks — the <code>schtasks /create</code> command assembles live below.
+The form adapts to the schedule type you pick.</p>
+
+<div class="st-form">
+  <div class="st-row">
+    <label class="manifest-label" for="st-name">task name</label>
+    <input id="st-name" type="text" value="Nightly Backup" autocomplete="off" spellcheck="false">
+  </div>
+  <div class="st-row">
+    <label class="manifest-label" for="st-prog">program to run</label>
+    <input id="st-prog" type="text" value="C:\Scripts\backup.cmd" autocomplete="off" spellcheck="false">
+  </div>
+  <div class="st-row" id="st-row-short" hidden>
+    <label class="manifest-label">short name</label>
+    <div class="st-short">
+      <div class="st-short-line"><code id="st-short-path"></code>
+        <button type="button" id="st-short-use" class="st-short-btn">use this path</button></div>
+      <p class="st-note">The <code>~1</code> suffix is Windows' usual default, but real
+      short names depend on the filesystem (and 8.3 names can be disabled). Confirm on
+      the target machine with:<br><code id="st-short-verify" class="st-verify"></code></p>
+    </div>
+  </div>
+  <div class="st-row">
+    <label class="manifest-label" for="st-args">arguments</label>
+    <input id="st-args" type="text" placeholder="(optional)" autocomplete="off" spellcheck="false">
+  </div>
+  <div class="st-row">
+    <label class="manifest-label" for="st-sc">schedule</label>
+    <select id="st-sc">
+      <option value="DAILY" selected>daily</option>
+      <option value="WEEKLY">weekly</option>
+      <option value="MONTHLY">monthly</option>
+      <option value="MINUTE">every N minutes</option>
+      <option value="HOURLY">every N hours</option>
+      <option value="ONCE">once</option>
+      <option value="ONSTART">at system startup</option>
+      <option value="ONLOGON">at logon</option>
+      <option value="ONIDLE">when idle</option>
+    </select>
+  </div>
+  <div class="st-row" id="st-row-mo" hidden>
+    <label class="manifest-label" for="st-mo">every</label>
+    <span class="st-inline"><input id="st-mo" type="number" min="1" value="1">
+    <span id="st-mo-unit" class="st-unit">days</span></span>
+  </div>
+  <div class="st-row" id="st-row-monthly-mode" hidden>
+    <label class="manifest-label" for="st-monthly-mode">pattern</label>
+    <select id="st-monthly-mode">
+      <option value="DOM" selected>on a day of the month</option>
+      <option value="FIRST">on the first …</option>
+      <option value="SECOND">on the second …</option>
+      <option value="THIRD">on the third …</option>
+      <option value="FOURTH">on the fourth …</option>
+      <option value="LAST">on the last …</option>
+      <option value="LASTDAY">on the last day of the month</option>
+    </select>
+  </div>
+  <div class="st-row" id="st-row-dom" hidden>
+    <label class="manifest-label" for="st-dom">day of month</label>
+    <select id="st-dom"></select>
+  </div>
+  <div class="st-row" id="st-row-dow" hidden>
+    <label class="manifest-label" for="st-dow">weekday</label>
+    <select id="st-dow">
+      <option>MON</option><option>TUE</option><option>WED</option><option>THU</option>
+      <option>FRI</option><option>SAT</option><option>SUN</option>
+    </select>
+  </div>
+  <div class="st-row" id="st-row-days" hidden>
+    <label class="manifest-label">days</label>
+    <div class="st-chips" id="st-days"></div>
+  </div>
+  <div class="st-row" id="st-row-months" hidden>
+    <label class="manifest-label">months</label>
+    <div class="st-chips" id="st-months"></div>
+  </div>
+  <div class="st-row" id="st-row-st">
+    <label class="manifest-label" for="st-st">start time</label>
+    <input id="st-st" type="time" value="09:00">
+  </div>
+  <div class="st-row" id="st-row-sd" hidden>
+    <label class="manifest-label" for="st-sd">start date</label>
+    <input id="st-sd" type="date">
+  </div>
+  <div class="st-row" id="st-row-idle" hidden>
+    <label class="manifest-label" for="st-idle">idle minutes</label>
+    <input id="st-idle" type="number" min="1" max="999" value="10">
+  </div>
+  <div class="st-row">
+    <label class="manifest-label" for="st-ru">run as</label>
+    <span class="st-inline">
+      <select id="st-ru">
+        <option value="" selected>current user</option>
+        <option value="SYSTEM">SYSTEM</option>
+        <option value="custom">another account…</option>
+      </select>
+      <input id="st-ru-custom" type="text" placeholder="DOMAIN\user" autocomplete="off"
+        spellcheck="false" hidden>
+    </span>
+  </div>
+  <div class="st-row">
+    <label class="manifest-label" for="st-rl">run level</label>
+    <select id="st-rl">
+      <option value="" selected>limited (default)</option>
+      <option value="HIGHEST">highest privileges</option>
+    </select>
+  </div>
+  <div class="st-row">
+    <label class="manifest-label" for="st-f">overwrite</label>
+    <label class="st-check"><input id="st-f" type="checkbox"> replace the task if it
+      already exists (<code>/f</code>)</label>
+  </div>
+</div>
+
+<div id="st-errors" class="st-error" hidden></div>
+<div id="st-summary" class="st-summary" hidden></div>
+
+<figure class="code-block">
+<figcaption class="code-lang manifest-label">schtasks</figcaption>
+<pre class="code-body"><code id="st-output"></code></pre>
+</figure>
+
+<p class="st-note">The <code>/sd</code> and <code>/ed</code> date format follows the
+machine's regional settings (MM/DD/YYYY on US-locale systems). Creating tasks that run
+as SYSTEM or with highest privileges requires an elevated prompt. A custom account will
+be prompted for its password when the command runs.</p>
+
+<section class="rc-section">
+<h2>Last Run Result codes</h2>
+<p>When a scheduled task fails silently, Task Scheduler records a hex <em>Last Run
+Result</em> — the column in <code>taskschd.msc</code>, or the <code>Last Result</code>
+line from <code>schtasks /query /tn "Name" /v /fo LIST</code>. Search a code or keyword
+to see what it means and how to fix it. <code>0x0</code> is success; anything else is
+either the program's own exit code or a Task Scheduler <code>SCHED_*</code> constant.</p>
+
+<div class="rc-controls">
+<input id="rc-input" type="search" placeholder="0x41303, 0x1, access denied, not logged on…"
+  autocomplete="off" autocapitalize="off" spellcheck="false">
+<select id="rc-fam" aria-label="Filter by source">
+<option value="">any source</option>
+<option value="exit">program exit code</option>
+<option value="sched">task scheduler</option>
+</select>
+<select id="rc-sev" aria-label="Filter by severity">
+<option value="">any severity</option>
+<option value="high">high</option>
+<option value="medium">medium</option>
+<option value="low">low</option>
+<option value="info">info</option>
+</select>
+</div>
+
+<p id="rc-count" class="rc-count"></p>
+
+<div class="rc-table-wrap">
+<table id="rc-table">
+<thead><tr>
+<th class="rc-code-col">code</th>
+<th>constant</th>
+<th>meaning</th>
+<th class="rc-sev-col">severity</th>
+</tr></thead>
+<tbody id="rc-body"></tbody>
+</table>
+</div>
+<p id="rc-empty" class="rc-empty" hidden>No codes match those filters.</p>
+</section>
+<details class="tool-learn"><summary class="manifest-label">task scheduler 101</summary><div class="tool-learn-body"><h3>Task Scheduler and schtasks</h3>
+<p>Windows Task Scheduler is the service behind every scheduled job on Windows —
+what cron is to Unix. <code>schtasks.exe</code> is its command-line face; the GUI
+(<code>taskschd.msc</code>) and PowerShell's
+<code>Register-ScheduledTask</code> manage the same task store. Tasks live in a
+folder tree — name a task <code>\MyFolder\MyTask</code> to keep things organized.</p>
+
+<h3>The verbs</h3>
+<table>
+<thead><tr><th>command</th><th>what it does</th></tr></thead>
+<tbody>
+<tr><td><code>schtasks /create …</code></td><td>create a task (what this tool builds)</td></tr>
+<tr><td><code>schtasks /query /tn "Name" /v /fo LIST</code></td><td>inspect a task — status, last/next run, last result</td></tr>
+<tr><td><code>schtasks /run /tn "Name"</code></td><td>run it right now (great for testing)</td></tr>
+<tr><td><code>schtasks /end /tn "Name"</code></td><td>stop a running instance</td></tr>
+<tr><td><code>schtasks /change /tn "Name" …</code></td><td>modify an existing task</td></tr>
+<tr><td><code>schtasks /delete /tn "Name" /f</code></td><td>remove it</td></tr>
+</tbody>
+</table>
+
+<h3>The flags this tool generates</h3>
+<table>
+<thead><tr><th>flag</th><th>meaning</th></tr></thead>
+<tbody>
+<tr><td><code>/tn</code></td><td>task name (quote it if it has spaces)</td></tr>
+<tr><td><code>/tr</code></td><td>the program to run, with its arguments</td></tr>
+<tr><td><code>/sc</code></td><td>schedule type: MINUTE, HOURLY, DAILY, WEEKLY, MONTHLY, ONCE, ONSTART, ONLOGON, ONIDLE</td></tr>
+<tr><td><code>/mo</code></td><td>modifier — "every N" for time schedules, or FIRST/SECOND/THIRD/FOURTH/LAST/LASTDAY for monthly patterns</td></tr>
+<tr><td><code>/d</code> / <code>/m</code></td><td>days (MON-SUN or 1-31) and months (JAN-DEC)</td></tr>
+<tr><td><code>/st</code> / <code>/sd</code> / <code>/ed</code></td><td>start time (24h HH:MM), start date, end date</td></tr>
+<tr><td><code>/ru</code> / <code>/rp</code></td><td>the account the task runs as, and its password (SYSTEM needs none)</td></tr>
+<tr><td><code>/rl HIGHEST</code></td><td>run elevated ("highest privileges" — the checkbox in the GUI)</td></tr>
+<tr><td><code>/f</code></td><td>overwrite an existing task with the same name</td></tr>
+<tr><td><code>/i</code></td><td>idle minutes to wait (ONIDLE only)</td></tr>
+</tbody>
+</table>
+
+<h3>Quoting — the part everyone gets wrong</h3>
+<p>The whole <code>/tr</code> value needs outer double quotes, and if the program
+path itself contains spaces it needs its own <em>escaped</em> quotes inside:</p>
+<pre><code>/tr "\"C:\Program Files\App\run.exe\" --flag value"</code></pre>
+<p>Get this wrong and Windows tries to run <code>C:\Program</code> with
+<code>Files\App\run.exe</code> as an argument. Two reliable escapes: the nested-quote
+form above (this tool generates it for you), or dodge the problem entirely with an
+<strong>8.3 short name</strong> like <code>C:\PROGRA~1\App\run.exe</code> — spaceless,
+so no inner quotes needed. Short names are assigned by the filesystem, so confirm the
+real one with <code>for %I in ("C:\path with spaces\x.exe") do @echo %~sI</code>
+(they can also be disabled system-wide).</p>
+
+<h3>Gotchas worth knowing</h3>
+<ul>
+<li><strong>Elevation</strong> — creating tasks that run as SYSTEM, as another user,
+or with <code>/rl HIGHEST</code> requires an elevated (Administrator) prompt.</li>
+<li><strong>Date format</strong> — <code>/sd</code> and <code>/ed</code> follow the
+machine's regional settings: MM/DD/YYYY on US systems, DD/MM/YYYY elsewhere. A
+"working" command can break on a differently-configured server.</li>
+<li><strong>Last Run Result</strong> — <code>0x0</code> means success;
+<code>0x1</code> usually means the program wasn't found or returned 1 (often a
+quoting problem); <code>0x41303</code> means "has not yet run". The searchable
+<strong>Last Run Result codes</strong> table below the builder decodes these and
+the rest, with a fix for each.</li>
+<li><strong>Password changes</strong> — a task registered with <code>/ru user</code>
+stores credentials; when that password changes, the task quietly stops running
+until it's re-registered.</li>
+<li><strong>Working directory</strong> — schtasks gives you no flag for it; tasks
+start in <code>System32</code>. Use absolute paths inside your scripts, or
+<code>cd /d</code> first in a wrapper <code>.cmd</code>.</li>
+</ul>
+</div></details>
+  </article>
+</main>
+<footer class="footer">
+  <span class="mono">runs entirely in your browser · nothing is uploaded</span>
+  <a class="mono" href="https://github.com/Real-Fruit-Snacks/windows-task-builder" rel="noopener">source</a>
+</footer>
+
+<div id="settings-panel" class="settings-panel" role="dialog" aria-modal="true" aria-label="Settings" hidden></div>
+<div id="settings-scrim" class="settings-scrim" hidden></div>
+<div id="help-overlay" class="help-overlay" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts" hidden></div>
+<div id="site-pet" aria-hidden="true"><div class="pet-tilt"><div class="pet-sprite" title="pet the ghost to recolor it"><svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="pet-body" d="M2 16 V7 Q2 1 8 1 Q14 1 14 7 V16 L12 14.4 L10 16 L8 14.4 L6 16 L4 14.4 Z"/><g class="pet-eyes-open"><rect x="5" y="6" width="2" height="3"/><rect x="9" y="6" width="2" height="3"/></g><g class="pet-eyes-closed"><rect x="5" y="8" width="2" height="1"/><rect x="9" y="8" width="2" height="1"/></g><g class="pet-eyes-happy"><path d="M4.6 8 L6 6.6 L7.4 8"/><path d="M8.6 8 L10 6.6 L11.4 8"/></g></svg></div></div></div>
+
+<script src="js/settings.js"></script>
+<script src="js/tool.js"></script>
+<script src="js/result-codes.js"></script>
+<script src="js/result-codes-view.js"></script>
+<script src="js/content.js"></script>
+<script src="js/pet.js"></script>
+</body>
+</html>
