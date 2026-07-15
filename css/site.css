@@ -308,6 +308,44 @@ article.note-wide { max-width: 1080px; }
 .note-header h1 { margin: 0 0 8px; }
 .tool-desc { color: var(--twb-text-soft); margin: 4px 0 0; font-size: 0.95em; }
 
+/* collapsible "learn more" knowledge panel — polished whether open or closed */
+details.tool-learn {
+  margin-top: 44px;
+  border: 1px solid var(--twb-border); border-radius: var(--twb-radius-m, 8px);
+  background: var(--twb-bg-1); overflow: hidden;
+  --icon-learn: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linejoin='round'%20d='M2%204h6a4%204%200%200%201%204%204v12a3%203%200%200%200-3-3H2zM22%204h-6a4%204%200%200%200-4%204v12a3%203%200%200%201%203-3h7z'/%3E%3C/svg%3E");
+  --icon-chevron: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%2016'%3E%3Cpath%20d='M4%206l4%204%204-4'%20fill='none'%20stroke='black'%20stroke-width='1.6'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+details.tool-learn > summary {
+  cursor: pointer; padding: 12px 15px; list-style: none;
+  display: flex; align-items: center; gap: 9px;
+  color: var(--twb-text-muted);
+}
+details.tool-learn > summary::-webkit-details-marker { display: none; }
+details.tool-learn > summary::before {
+  content: ""; flex: none; width: 14px; height: 14px; background-color: currentColor;
+  -webkit-mask: var(--icon-learn) no-repeat center / contain;
+  mask: var(--icon-learn) no-repeat center / contain;
+}
+details.tool-learn > summary::after {
+  content: ""; margin-left: auto; flex: none; width: 13px; height: 13px;
+  background-color: currentColor;
+  -webkit-mask: var(--icon-chevron) no-repeat center / contain;
+  mask: var(--icon-chevron) no-repeat center / contain;
+}
+details.tool-learn > summary:hover { color: var(--twb-text-normal); background: var(--twb-bg-2); }
+details.tool-learn > summary:focus-visible { outline: 2px solid var(--twb-focus-ring); outline-offset: -2px; }
+details.tool-learn[open] > summary {
+  color: var(--twb-text-soft); border-bottom: 1px solid var(--twb-border);
+}
+@media (prefers-reduced-motion: no-preference) {
+  details.tool-learn > summary,
+  details.tool-learn > summary::after { transition: color 120ms ease, background 120ms ease, transform 160ms ease; }
+}
+details.tool-learn[open] > summary::after { transform: rotate(180deg); }
+.tool-learn-body { padding: 14px 18px 16px; }
+.tool-learn-body > *:first-child { margin-top: 0; }
+
 /* headings */
 h1, h2, h3, h4, h5, h6 { line-height: 1.25; }
 h1 { font-size: 1.6em; font-weight: 760; color: var(--twb-text-normal); }
