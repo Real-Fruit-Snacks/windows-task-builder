@@ -24,6 +24,7 @@ ever leaves the page. Open `index.html` from a USB stick and it works.
 ## Features
 
 - Fill in the fields and get a complete `schtasks /create` command.
+- One-click examples (daily, hourly, at-logon, at-startup, once).
 - Covers triggers, schedules, run-as, and common options.
 - Includes a searchable result-code reference.
 - **Both themes, six accents** — dark by default, light by preference or toggle; inputs, scrollbars and focus rings all follow the theme.
